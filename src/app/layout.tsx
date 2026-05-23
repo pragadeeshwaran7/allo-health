@@ -30,10 +30,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
-      <body className="font-sans min-h-screen bg-[#030712] text-gray-100 antialiased selection:bg-indigo-500/30 overflow-x-hidden">
+      <body className="font-sans min-h-screen bg-[#030712] text-gray-100 antialiased selection:bg-indigo-500/30 overflow-x-hidden relative flex flex-col items-center">
+        {/* Subtle grid background */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-[size:24px_24px] pointer-events-none" />
+        
         <Providers>
-          <header className="sticky top-0 z-50 border-b border-white/5 bg-[#030712]/80 backdrop-blur-xl">
-            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-[#030712]/80 backdrop-blur-xl">
+            <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
               <div className="flex h-16 items-center justify-between">
                 <a href="/" className="flex items-center gap-3 group">
                   <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] group-hover:shadow-[0_0_25px_rgba(79,70,229,0.8)] transition-all">
@@ -53,7 +56,7 @@ export default function RootLayout({
               </div>
             </div>
           </header>
-          <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 relative z-10">
+          <main className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8 relative z-10 flex-1">
             {children}
           </main>
         </Providers>
