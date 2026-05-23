@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   try {
     const products = await prisma.product.findMany({
@@ -26,8 +28,8 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({ products: enriched });
-  } catch (err) {
+  } catch (err: any) {
     console.error("[GET /api/products]", err);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: err.message || "Internal server error", stack: err.stack }, { status: 500 });
   }
 }

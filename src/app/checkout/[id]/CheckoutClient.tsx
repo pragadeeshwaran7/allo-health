@@ -271,119 +271,121 @@ export default function CheckoutClient({
   const isUrgent = percent < 25;
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-4xl relative">
+      {/* Background glow for checkout */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[600px] bg-indigo-500/10 rounded-full blur-[150px] pointer-events-none" />
+
       {/* Header */}
-      <div className="mb-8">
-        <button
-          onClick={() => router.push("/")}
-          className="mb-4 flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors"
-        >
-          ← Back to products
-        </button>
-        <h1 className="text-3xl font-extrabold text-white">Checkout</h1>
-        <p className="text-gray-400">Complete your purchase before your reservation expires.</p>
+      <div className="mb-10 relative z-10 text-center">
+        <h1 className="text-4xl md:text-5xl font-extrabold text-white font-display mb-3 tracking-tight">Complete <span className="gradient-text">Checkout</span></h1>
+        <p className="text-gray-400 text-lg">Secure your items before the reservation expires.</p>
       </div>
 
-      {/* Countdown */}
-      <div
-        className={`mb-6 rounded-2xl border p-5 ${
-          isUrgent
-            ? "border-red-500/30 bg-red-500/5"
-            : "border-yellow-500/20 bg-yellow-500/5"
-        }`}
-      >
-        <div className="flex items-center justify-between mb-3">
-          <span className="text-sm font-semibold text-gray-300">
-            {isUrgent ? "⚠ Hurry! Reservation expiring soon" : "⏱ Time remaining to complete purchase"}
-          </span>
-          <span
-            className={`text-2xl font-mono font-bold tabular-nums ${
-              isUrgent ? "text-red-400 countdown-urgent" : "text-yellow-400"
+      <div className="grid gap-8 md:grid-cols-5 relative z-10">
+        {/* Order summary - Left Column */}
+        <div className="md:col-span-3 flex flex-col gap-6">
+          {/* Countdown */}
+          <div
+            className={`glass-panel rounded-2xl p-6 overflow-hidden relative transition-colors duration-500 ${
+              isUrgent
+                ? "bg-red-500/10 border-red-500/40 shadow-[0_0_30px_rgba(239,68,68,0.2)]"
+                : "border-indigo-500/20"
             }`}
           >
-            {timeLeft}
-          </span>
-        </div>
-        {/* Progress bar */}
-        <div className="h-2 w-full overflow-hidden rounded-full bg-gray-800">
-          <div
-            className={`h-full rounded-full transition-all duration-1000 ${
-              isUrgent ? "bg-red-500" : percent < 50 ? "bg-yellow-500" : "bg-green-500"
-            }`}
-            style={{ width: `${percent}%` }}
-          />
-        </div>
-        <p className="mt-2 text-xs text-gray-500">
-          Expires at {new Date(reservation.expiresAt).toLocaleTimeString()}
-        </p>
-      </div>
+            {isUrgent && <div className="absolute inset-0 bg-red-500/5 animate-pulse" />}
+            
+            <div className="relative z-10 flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <span className={`flex items-center justify-center w-10 h-10 rounded-full ${isUrgent ? 'bg-red-500/20 text-red-400' : 'bg-indigo-500/20 text-indigo-400'}`}>
+                  {isUrgent ? '⚠️' : '⏱'}
+                </span>
+                <span className="text-sm font-semibold text-gray-300">
+                  {isUrgent ? "Hurry! Reservation expiring soon" : "Time remaining to complete purchase"}
+                </span>
+              </div>
+              <span
+                className={`text-3xl font-display font-bold tabular-nums tracking-wider ${
+                  isUrgent ? "text-red-400 countdown-urgent" : "text-indigo-400"
+                }`}
+              >
+                {timeLeft}
+              </span>
+            </div>
+            {/* Progress bar */}
+            <div className="h-3 w-full overflow-hidden rounded-full bg-black/40 relative z-10">
+              <div
+                className={`h-full rounded-full transition-all duration-1000 relative overflow-hidden ${
+                  isUrgent ? "bg-red-500 shadow-[0_0_10px_#ef4444]" : percent < 50 ? "bg-indigo-400 shadow-[0_0_10px_#818cf8]" : "bg-indigo-500"
+                }`}
+                style={{ width: `${percent}%` }}
+              >
+                <div className="absolute inset-0 bg-white/20 w-full animate-[translateX_2s_infinite]" style={{ transform: 'translateX(-100%)' }} />
+              </div>
+            </div>
+          </div>
 
-      <div className="grid gap-6 md:grid-cols-5">
-        {/* Order summary */}
-        <div className="md:col-span-3 rounded-2xl border border-gray-800 bg-gray-900 p-6">
-          <h2 className="mb-4 text-lg font-bold text-white">Order Summary</h2>
-          <div className="flex gap-4">
-            {reservation.product.imageUrl && (
-              <img
-                src={reservation.product.imageUrl}
-                alt={reservation.product.name}
-                className="h-20 w-20 rounded-lg object-cover flex-shrink-0"
-              />
-            )}
-            <div className="flex-1">
-              <h3 className="font-semibold text-white leading-tight">
-                {reservation.product.name}
-              </h3>
-              {reservation.product.description && (
-                <p className="mt-1 text-sm text-gray-400 line-clamp-2">
-                  {reservation.product.description}
-                </p>
+          <div className="glass-panel rounded-2xl p-8">
+            <h2 className="mb-6 text-xl font-bold text-white font-display border-b border-white/10 pb-4">Order Summary</h2>
+            <div className="flex flex-col sm:flex-row gap-6">
+              {reservation.product.imageUrl ? (
+                <img
+                  src={reservation.product.imageUrl}
+                  alt={reservation.product.name}
+                  className="h-32 w-32 rounded-xl object-cover flex-shrink-0 shadow-lg"
+                />
+              ) : (
+                <div className="h-32 w-32 rounded-xl bg-white/5 flex items-center justify-center text-gray-500">
+                  No Image
+                </div>
               )}
-              <div className="mt-3 flex items-center justify-between">
-                <span className="text-sm text-gray-400">
-                  Qty: {reservation.quantity}
-                </span>
-                <span className="text-xl font-bold text-blue-400">
-                  {formatCurrency(reservation.product.price * reservation.quantity)}
-                </span>
+              <div className="flex-1 flex flex-col justify-center">
+                <h3 className="text-2xl font-bold text-white mb-2 font-display">
+                  {reservation.product.name}
+                </h3>
+                {reservation.product.description && (
+                  <p className="text-sm text-gray-400 line-clamp-2 mb-4">
+                    {reservation.product.description}
+                  </p>
+                )}
+                <div className="flex items-end justify-between mt-auto">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Quantity</span>
+                    <span className="text-lg font-medium text-white">{reservation.quantity}</span>
+                  </div>
+                  <span className="text-3xl font-extrabold text-white">
+                    {formatCurrency(reservation.product.price * reservation.quantity).replace('.00', '')}
+                    <span className="text-lg text-gray-400">.00</span>
+                  </span>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <div className="mt-6 space-y-2 border-t border-gray-800 pt-4 text-sm">
-            <div className="flex justify-between text-gray-400">
-              <span>Reservation ID</span>
-              <span className="font-mono text-xs text-gray-300 truncate ml-4">{reservation.id}</span>
-            </div>
-            <div className="flex justify-between text-gray-400">
-              <span>Status</span>
-              <span className="text-yellow-400 font-semibold">PENDING</span>
             </div>
           </div>
         </div>
 
-        {/* Actions */}
-        <div className="md:col-span-2 flex flex-col gap-4">
-          <div className="rounded-2xl border border-gray-800 bg-gray-900 p-6">
-            <h2 className="mb-4 text-lg font-bold text-white">Complete Purchase</h2>
-            <div className="mb-4 space-y-2 text-sm text-gray-400">
-              <div className="flex justify-between">
+        {/* Actions - Right Column */}
+        <div className="md:col-span-2 flex flex-col gap-6">
+          <div className="glass-panel rounded-2xl p-8 relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-bl-full blur-[30px]" />
+            <h2 className="mb-6 text-xl font-bold text-white font-display border-b border-white/10 pb-4 relative z-10">Payment Details</h2>
+            
+            <div className="mb-8 space-y-4 text-sm text-gray-400 relative z-10">
+              <div className="flex justify-between items-center">
                 <span>Subtotal</span>
-                <span className="text-white">{formatCurrency(reservation.product.price)}</span>
+                <span className="text-white font-medium">{formatCurrency(reservation.product.price)}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span>Shipping</span>
-                <span className="text-green-400">Free</span>
+                <span className="badge-glass px-2 py-0.5 rounded text-green-400 text-xs">Free</span>
               </div>
-              <div className="flex justify-between border-t border-gray-800 pt-2 text-base font-bold text-white">
+              <div className="flex justify-between border-t border-white/10 pt-4 text-xl font-bold text-white mt-2">
                 <span>Total</span>
-                <span>{formatCurrency(reservation.product.price * reservation.quantity)}</span>
+                <span className="text-indigo-400">{formatCurrency(reservation.product.price * reservation.quantity)}</span>
               </div>
             </div>
 
             {actionError && (
-              <div className="mb-4 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
-                ⚠ {actionError}
+              <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 backdrop-blur-sm flex items-start gap-2">
+                <span className="text-red-400">⚠️</span> {actionError}
               </div>
             )}
 
@@ -391,22 +393,22 @@ export default function CheckoutClient({
               id="confirm-purchase-btn"
               onClick={handleConfirm}
               disabled={confirming || cancelling}
-              className={`w-full rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200 ${
+              className={`relative z-10 w-full rounded-xl px-6 py-4 text-sm font-bold uppercase tracking-wider transition-all duration-300 mb-4 ${
                 confirming
-                  ? "cursor-wait bg-green-700 text-green-200"
-                  : "gradient-success text-white hover:opacity-90 hover:shadow-lg hover:shadow-green-500/25 active:scale-95"
+                  ? "cursor-wait bg-indigo-600/50 text-indigo-200 border border-indigo-500/30"
+                  : "btn-shiny text-white shadow-[0_0_20px_rgba(79,70,229,0.3)] hover:shadow-[0_0_30px_rgba(79,70,229,0.5)]"
               }`}
             >
               {confirming ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                <span className="flex items-center justify-center gap-3">
+                  <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                   </svg>
-                  Confirming...
+                  Processing...
                 </span>
               ) : (
-                "✓ Confirm Purchase"
+                "Complete Purchase"
               )}
             </button>
 
@@ -414,23 +416,14 @@ export default function CheckoutClient({
               id="cancel-reservation-btn"
               onClick={handleCancel}
               disabled={confirming || cancelling}
-              className={`mt-3 w-full rounded-xl px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+              className={`relative z-10 w-full rounded-xl px-6 py-3.5 text-sm font-bold transition-all duration-200 border ${
                 cancelling
-                  ? "cursor-wait bg-gray-800 text-gray-400"
-                  : "bg-gray-800 text-gray-300 hover:bg-gray-700 hover:text-white"
+                  ? "cursor-wait bg-white/5 text-gray-500 border-transparent"
+                  : "border-white/10 bg-transparent text-gray-400 hover:bg-white/5 hover:text-white hover:border-white/20"
               }`}
             >
-              {cancelling ? "Cancelling..." : "✕ Cancel Reservation"}
+              {cancelling ? "Releasing hold..." : "Cancel Reservation"}
             </button>
-          </div>
-
-          <div className="rounded-xl border border-gray-800 bg-gray-900/50 p-4 text-xs text-gray-500">
-            <p className="mb-1 font-semibold text-gray-400">What happens next?</p>
-            <ul className="space-y-1 list-disc list-inside">
-              <li>Confirming permanently places your order</li>
-              <li>Cancelling returns units to available stock</li>
-              <li>Expiry auto-releases units after 10 min</li>
-            </ul>
           </div>
         </div>
       </div>

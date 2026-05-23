@@ -98,30 +98,30 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
   }
 
   return (
-    <div className="card-hover flex flex-col overflow-hidden rounded-2xl border border-gray-800 bg-gray-900 shadow-xl">
+    <div className="premium-card glass-panel flex flex-col rounded-2xl">
       {/* Product Image */}
-      <div className="relative h-48 overflow-hidden bg-gray-800">
+      <div className="relative h-56 overflow-hidden bg-black/40">
         {product.imageUrl ? (
           <img
             src={product.imageUrl}
             alt={product.name}
-            className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+            className="h-full w-full object-cover transition-transform duration-700 hover:scale-110 opacity-90 hover:opacity-100"
           />
         ) : (
           <div className="flex h-full items-center justify-center text-gray-600">
-            <svg className="h-16 w-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="h-16 w-16 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
         )}
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-4 right-4">
           <span
-            className={`rounded-full px-2.5 py-1 text-xs font-semibold ${
+            className={`badge-glass rounded-full px-3 py-1 text-xs font-semibold shadow-lg ${
               totalAvailable === 0
-                ? "stock-badge-out"
+                ? "text-red-400"
                 : totalAvailable <= 3
-                ? "stock-badge-low"
-                : "stock-badge-available"
+                ? "text-yellow-400"
+                : "text-green-400"
             }`}
           >
             {totalAvailable === 0
@@ -132,23 +132,24 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
       </div>
 
       {/* Content */}
-      <div className="flex flex-1 flex-col p-5">
-        <h2 className="mb-1 text-lg font-bold leading-tight text-white">
+      <div className="flex flex-1 flex-col p-6">
+        <h2 className="mb-2 text-xl font-bold leading-tight text-white font-display">
           {product.name}
         </h2>
         {product.description && (
-          <p className="mb-4 line-clamp-2 text-sm text-gray-400">
+          <p className="mb-5 line-clamp-2 text-sm text-gray-400">
             {product.description}
           </p>
         )}
 
-        <p className="mb-4 text-2xl font-bold text-blue-400">
-          {formatCurrency(product.price)}
+        <p className="mb-6 text-3xl font-extrabold text-white flex items-baseline gap-1">
+          {formatCurrency(product.price).replace('.00', '')}
+          <span className="text-lg text-gray-400 font-medium">.00</span>
         </p>
 
         {/* Warehouse stock breakdown */}
-        <div className="mb-4 space-y-2">
-          <p className="text-xs font-semibold uppercase tracking-widest text-gray-500">
+        <div className="mb-6 space-y-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-indigo-400/80 mb-3">
             Select Warehouse
           </p>
           {product.stocks.map((stock) => (
@@ -158,23 +159,25 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
                 stock.available > 0 && setSelectedWarehouse(stock)
               }
               disabled={stock.available === 0}
-              className={`w-full rounded-lg border px-3 py-2.5 text-left text-sm transition-all ${
+              className={`w-full rounded-xl border px-4 py-3 text-left transition-all duration-200 ${
                 selectedWarehouse?.warehouseId === stock.warehouseId
-                  ? "border-blue-500 bg-blue-500/10 text-blue-300"
+                  ? "border-indigo-500 bg-indigo-500/10 text-indigo-100 shadow-[0_0_15px_rgba(79,70,229,0.15)]"
                   : stock.available === 0
-                  ? "cursor-not-allowed border-gray-800 bg-gray-800/50 opacity-50 text-gray-500"
-                  : "border-gray-700 bg-gray-800 text-gray-300 hover:border-gray-600 hover:bg-gray-750"
+                  ? "cursor-not-allowed border-white/5 bg-white/5 opacity-40 text-gray-500"
+                  : "border-white/10 bg-white/5 text-gray-300 hover:border-white/20 hover:bg-white/10"
               }`}
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="font-medium">{stock.warehouse.name}</span>
-                  <span className="ml-2 text-xs text-gray-500">
+                  <span className="font-semibold block mb-0.5">{stock.warehouse.name}</span>
+                  <span className="text-xs text-gray-400/80">
                     {stock.warehouse.location}
                   </span>
                 </div>
                 <span
-                  className={`rounded-full px-2 py-0.5 text-xs font-medium ${getStockClass(stock.available)}`}
+                  className={`rounded-full px-2.5 py-1 text-xs font-bold ${
+                    stock.available === 0 ? 'badge-out' : stock.available <= 2 ? 'badge-low' : 'bg-green-500/10 text-green-400 border border-green-500/20'
+                  }`}
                 >
                   {getStockLabel(stock)}
                 </span>
@@ -185,8 +188,8 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
 
         {/* Error */}
         {error && (
-          <div className="mb-3 rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-2 text-sm text-red-400">
-            ⚠ {error}
+          <div className="mb-4 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200 backdrop-blur-sm flex items-start gap-2">
+            <span className="text-red-400">⚠️</span> {error}
           </div>
         )}
 
@@ -194,17 +197,17 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
         <button
           onClick={handleReserve}
           disabled={!selectedWarehouse || totalAvailable === 0 || reserving}
-          className={`mt-auto w-full rounded-xl px-4 py-3 text-sm font-bold transition-all duration-200 ${
+          className={`mt-auto w-full rounded-xl px-6 py-4 text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
             !selectedWarehouse || totalAvailable === 0
-              ? "cursor-not-allowed bg-gray-800 text-gray-500"
+              ? "cursor-not-allowed bg-white/5 text-gray-500 border border-white/10"
               : reserving
-              ? "cursor-wait bg-blue-700 text-blue-200"
-              : "gradient-brand text-white hover:opacity-90 hover:shadow-lg hover:shadow-blue-500/25 active:scale-95"
+              ? "cursor-wait bg-indigo-600/50 text-indigo-200 border border-indigo-500/30"
+              : "btn-shiny text-white shadow-lg"
           }`}
         >
           {reserving ? (
-            <span className="flex items-center justify-center gap-2">
-              <svg className="h-4 w-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <span className="flex items-center justify-center gap-3">
+              <svg className="h-5 w-5 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
               </svg>
@@ -213,7 +216,7 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
           ) : totalAvailable === 0 ? (
             "Out of Stock"
           ) : (
-            "Reserve Now →"
+            "Reserve Now"
           )}
         </button>
       </div>

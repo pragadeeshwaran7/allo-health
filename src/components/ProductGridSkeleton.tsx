@@ -4,19 +4,21 @@ export default function ProductGridSkeleton() {
       {Array.from({ length: 6 }).map((_, i) => (
         <div
           key={i}
-          className="overflow-hidden rounded-2xl border border-gray-800 bg-gray-900"
+          className="overflow-hidden rounded-2xl glass-panel"
         >
-          <div className="h-48 animate-pulse bg-gray-800" />
-          <div className="p-5 space-y-3">
-            <div className="h-5 w-3/4 animate-pulse rounded-md bg-gray-800" />
-            <div className="h-4 w-full animate-pulse rounded-md bg-gray-800" />
-            <div className="h-4 w-2/3 animate-pulse rounded-md bg-gray-800" />
-            <div className="h-8 w-1/3 animate-pulse rounded-md bg-gray-800" />
+          <div className="h-56 animate-pulse bg-white/5" />
+          <div className="p-6 space-y-4">
+            <div className="h-6 w-3/4 animate-pulse rounded-md bg-white/5" />
             <div className="space-y-2">
-              <div className="h-10 animate-pulse rounded-lg bg-gray-800" />
-              <div className="h-10 animate-pulse rounded-lg bg-gray-800" />
+              <div className="h-4 w-full animate-pulse rounded-md bg-white/5" />
+              <div className="h-4 w-2/3 animate-pulse rounded-md bg-white/5" />
             </div>
-            <div className="h-11 animate-pulse rounded-xl bg-gray-800" />
+            <div className="h-10 w-1/3 animate-pulse rounded-md bg-white/5" />
+            <div className="space-y-3 pt-2">
+              <div className="h-12 animate-pulse rounded-xl bg-white/5" />
+              <div className="h-12 animate-pulse rounded-xl bg-white/5" />
+            </div>
+            <div className="h-14 animate-pulse rounded-xl bg-white/5 mt-2" />
           </div>
         </div>
       ))}
