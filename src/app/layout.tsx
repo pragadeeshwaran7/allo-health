@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
+import { Providers } from "@/components/Providers";
+import UserNav from "@/components/UserNav";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -15,9 +17,9 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: "Allo Inventory | Real-time Stock Reservation",
+  title: "Allo Inventory | Premium Stock Reservation",
   description:
-    "Reserve products across multiple warehouses with real-time stock management. Race-condition-free inventory reservation system.",
+    "Reserve products across multiple warehouses with real-time stock management. Next-gen premium aesthetic.",
   keywords: ["inventory", "reservation", "stock", "warehouse", "ecommerce"],
 };
 
@@ -28,30 +30,33 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
-      <body className="font-sans min-h-screen bg-[#030712] text-gray-100 antialiased selection:bg-indigo-500/30">
-        <header className="sticky top-0 z-50 border-b border-gray-800 bg-gray-950/80 backdrop-blur-xl">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="flex h-16 items-center justify-between">
-              <a href="/" className="flex items-center gap-3">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg gradient-brand">
-                  <span className="text-sm font-bold text-white">A</span>
+      <body className="font-sans min-h-screen bg-[#030712] text-gray-100 antialiased selection:bg-indigo-500/30 overflow-x-hidden">
+        <Providers>
+          <header className="sticky top-0 z-50 border-b border-white/5 bg-[#030712]/80 backdrop-blur-xl">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+              <div className="flex h-16 items-center justify-between">
+                <a href="/" className="flex items-center gap-3 group">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.5)] group-hover:shadow-[0_0_25px_rgba(79,70,229,0.8)] transition-all">
+                    <span className="text-sm font-bold font-display">A</span>
+                  </div>
+                  <span className="text-xl font-bold tracking-tight text-white font-display">
+                    Allo <span className="text-indigo-400">Inventory</span>
+                  </span>
+                </a>
+                <div className="flex items-center gap-4">
+                  <span className="hidden sm:inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1 text-xs font-bold text-green-400 ring-1 ring-green-500/20">
+                    <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
+                    Live Stock
+                  </span>
+                  <UserNav />
                 </div>
-                <span className="text-xl font-bold tracking-tight text-white">
-                  Allo <span className="text-blue-400">Inventory</span>
-                </span>
-              </a>
-              <div className="flex items-center gap-2">
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/10 px-3 py-1 text-xs font-medium text-green-400 ring-1 ring-green-500/20">
-                  <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse"></span>
-                  Live Stock
-                </span>
               </div>
             </div>
-          </div>
-        </header>
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          {children}
-        </main>
+          </header>
+          <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 relative z-10">
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );

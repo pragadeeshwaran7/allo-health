@@ -4,6 +4,8 @@ import { acquireLock, releaseLock, setIdempotencyResponse, getIdempotencyRespons
 import { CreateReservationSchema } from "@/lib/schemas";
 import { ZodError } from "zod";
 import { Prisma } from "@prisma/client";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 const RESERVATION_EXPIRY_MINUTES = parseInt(
   process.env.RESERVATION_EXPIRY_MINUTES || "10",
@@ -14,6 +16,13 @@ export async function POST(request: NextRequest) {
   let lockKey: string | null = null;
 
   try {
+    const session = await getServerSession(authOptions);
+    const userId = session?.user?.id;
+
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await request.json();
 
     // Validate input
@@ -93,6 +102,7 @@ export async function POST(request: NextRequest) {
           data: {
             productId,
             warehouseId,
+            userId, // Attach logged-in user!
             quantity,
             status: "PENDING",
             expiresAt,

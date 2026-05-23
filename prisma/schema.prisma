@@ -31,6 +31,7 @@ model Warehouse {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   stocks    Stock[]
+  reservations Reservation[]
 
   @@map("warehouses")
 }
@@ -54,6 +55,7 @@ model Reservation {
   id             String            @id @default(cuid())
   productId      String
   warehouseId    String
+  userId         String?           // Optional to allow anonymous or attach if logged in
   quantity       Int               @default(1)
   status         ReservationStatus @default(PENDING)
   expiresAt      DateTime
@@ -63,9 +65,12 @@ model Reservation {
   createdAt      DateTime          @default(now())
   updatedAt      DateTime          @updatedAt
   product        Product           @relation(fields: [productId], references: [id])
+  warehouse      Warehouse         @relation(fields: [warehouseId], references: [id])
+  user           User?             @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([status, expiresAt])
   @@index([productId, warehouseId, status])
+  @@index([userId])
   @@map("reservations")
 }
 
@@ -73,4 +78,57 @@ enum ReservationStatus {
   PENDING
   CONFIRMED
   RELEASED
+}
+
+// ---- NextAuth Models ----
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?  @db.Text
+  access_token       String?  @db.Text
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?  @db.Text
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  reservations  Reservation[]
+
+  @@map("users")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
 }

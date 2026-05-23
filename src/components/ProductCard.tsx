@@ -1,9 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
-import { v4 as uuidv4 } from "uuid";
+import { useSession, signIn } from "next-auth/react";
 
 interface StockItem {
   id: string;
@@ -33,7 +32,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, onReserved }: ProductCardProps) {
-  const router = useRouter();
+  const { data: session } = useSession();
   const [selectedWarehouse, setSelectedWarehouse] = useState<StockItem | null>(
     product.stocks.find((s) => s.available > 0) || null
   );
@@ -48,25 +47,21 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
     return `${stock.available} available`;
   }
 
-  function getStockClass(available: number) {
-    if (available === 0) return "stock-badge-out";
-    if (available <= 2) return "stock-badge-low";
-    return "stock-badge-available";
-  }
-
   async function handleReserve() {
+    if (!session) {
+      signIn("google");
+      return;
+    }
+
     if (!selectedWarehouse) return;
     setReserving(true);
     setError(null);
-
-    const idempotencyKey = uuidv4();
 
     try {
       const res = await fetch("/api/reservations", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Idempotency-Key": idempotencyKey,
         },
         body: JSON.stringify({
           productId: product.id,
@@ -77,19 +72,13 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
 
       const data = await res.json();
 
-      if (res.status === 409) {
-        setError(`Not enough stock: ${data.error}`);
-        onReserved();
-        return;
-      }
-
       if (!res.ok) {
         setError(data.error || "Failed to reserve. Please try again.");
         return;
       }
 
       onReserved();
-      router.push(`/checkout/${data.reservation.id}`);
+      window.location.href = `/checkout/${data.reservation.id}`;
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -196,9 +185,9 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
         {/* Reserve button */}
         <button
           onClick={handleReserve}
-          disabled={!selectedWarehouse || totalAvailable === 0 || reserving}
+          disabled={(!!selectedWarehouse && totalAvailable === 0) || reserving}
           className={`mt-auto w-full rounded-xl px-6 py-4 text-sm font-bold uppercase tracking-wider transition-all duration-300 ${
-            !selectedWarehouse || totalAvailable === 0
+            (!!selectedWarehouse && totalAvailable === 0)
               ? "cursor-not-allowed bg-white/5 text-gray-500 border border-white/10"
               : reserving
               ? "cursor-wait bg-indigo-600/50 text-indigo-200 border border-indigo-500/30"
@@ -215,6 +204,8 @@ export default function ProductCard({ product, onReserved }: ProductCardProps) {
             </span>
           ) : totalAvailable === 0 ? (
             "Out of Stock"
+          ) : !session ? (
+            "Sign In to Reserve"
           ) : (
             "Reserve Now"
           )}
