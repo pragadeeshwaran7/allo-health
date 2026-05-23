@@ -23,10 +23,9 @@ export default function HomePage() {
           <span className="gradient-text">Inventory Experience</span>
         </h1>
         
-        <p className="mx-auto max-w-2xl text-center text-balance text-lg md:text-xl text-gray-400 leading-relaxed">
-          Browse our curated collection. Lock in your items for{" "}
-          <span className="font-semibold text-indigo-400">10 minutes</span> while
-          you complete checkout — guaranteed no race conditions.
+        <p className="mx-auto max-w-3xl text-center text-lg md:text-xl text-gray-400 leading-relaxed">
+          Browse our curated collection. Lock in your items for <span className="font-semibold text-indigo-400">10 minutes</span><br className="hidden sm:block" />
+          while you complete checkout — guaranteed no race conditions.
         </p>
       </div>
 
