@@ -1,6 +1,6 @@
 # Allo Inventory
 
-Hey there! 👋 Welcome to Allo Inventory. 
+Hey there! 👋 Welcome to Allo Inventory. https://allo-health-chi.vercel.app/
 
 I built this project to solve a very specific, yet incredibly common problem in e-commerce: **inventory race conditions**. You know that frustrating moment when you add the last item to your cart, go to checkout, and someone else buys it before you finish paying? Yeah, I hate that too.
 
