@@ -1,5 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
+// NOTE: In Prisma v7, datasource url is in prisma.config.ts, not here.
 
 generator client {
   provider = "prisma-client-js"
@@ -7,18 +8,17 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 model Product {
-  id          String       @id @default(cuid())
-  name        String
-  description String?
-  imageUrl    String?
-  price       Float
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  stocks      Stock[]
+  id           String        @id @default(cuid())
+  name         String
+  description  String?
+  imageUrl     String?
+  price        Float
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  stocks       Stock[]
   reservations Reservation[]
 
   @@map("products")
@@ -51,18 +51,18 @@ model Stock {
 }
 
 model Reservation {
-  id              String            @id @default(cuid())
-  productId       String
-  warehouseId     String
-  quantity        Int               @default(1)
-  status          ReservationStatus @default(PENDING)
-  expiresAt       DateTime
-  confirmedAt     DateTime?
-  releasedAt      DateTime?
-  idempotencyKey  String?           @unique
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  product         Product           @relation(fields: [productId], references: [id])
+  id             String            @id @default(cuid())
+  productId      String
+  warehouseId    String
+  quantity       Int               @default(1)
+  status         ReservationStatus @default(PENDING)
+  expiresAt      DateTime
+  confirmedAt    DateTime?
+  releasedAt     DateTime?
+  idempotencyKey String?           @unique
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+  product        Product           @relation(fields: [productId], references: [id])
 
   @@index([status, expiresAt])
   @@index([productId, warehouseId, status])

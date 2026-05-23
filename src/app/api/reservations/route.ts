@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { redis, acquireLock, releaseLock, setIdempotencyResponse, getIdempotencyResponse } from "@/lib/redis";
+import { acquireLock, releaseLock, setIdempotencyResponse, getIdempotencyResponse } from "@/lib/redis";
 import { CreateReservationSchema } from "@/lib/schemas";
 import { ZodError } from "zod";
+import { Prisma } from "@prisma/client";
 
 const RESERVATION_EXPIRY_MINUTES = parseInt(
   process.env.RESERVATION_EXPIRY_MINUTES || "10",
@@ -105,7 +106,7 @@ export async function POST(request: NextRequest) {
         return reservation;
       },
       {
-        isolationLevel: "Serializable",
+        isolationLevel: Prisma.TransactionIsolationLevel.Serializable,
         timeout: 10000,
       }
     );
