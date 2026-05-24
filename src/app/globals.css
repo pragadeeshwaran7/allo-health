@@ -1,28 +1,28 @@
 @import "tailwindcss";
+@source "../app/**/*.{ts,tsx}";
+@source "../components/**/*.{ts,tsx}";
 
 @theme {
   --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  
+  --color-brand-indigo: #4f46e5;
+  --color-brand-zinc: #18181b;
+  --color-brand-emerald: #10b981;
 }
 
-/* ---- Base Styles & Glassmorphism ---- */
+/* ---- Core Design Variables ---- */
 :root {
-  --background: #030712; /* Deep midnight */
-  --foreground: #f8fafc;
-  --primary: #4f46e5; /* Indigo 600 */
-  --primary-glow: rgba(79, 70, 229, 0.4);
-  --accent: #ec4899; /* Pink 500 */
-  --accent-glow: rgba(236, 72, 153, 0.4);
+  --background: #09090b; /* Matte Zinc 950 */
+  --foreground: #fafafa;
   --border: rgba(255, 255, 255, 0.08);
-  --glass-bg: rgba(17, 24, 39, 0.6); /* Frosted glass */
+  --panel-bg: #121214;
 }
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
   border-color: var(--border);
 }
 
@@ -33,10 +33,22 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-height: 100vh;
-  /* Cinematic glowing mesh background */
-  background-image: 
-    radial-gradient(circle at 15% 50%, rgba(79, 70, 229, 0.08), transparent 25%),
-    radial-gradient(circle at 85% 30%, rgba(236, 72, 153, 0.08), transparent 25%);
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* Subtle grid overlay - Very clean Developer aesthetic */
+.grid-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1;
+  background-image: linear-gradient(to right, rgba(255, 255, 255, 0.01) 1px, transparent 1px),
+                    linear-gradient(to bottom, rgba(255, 255, 255, 0.01) 1px, transparent 1px);
+  background-size: 32px 32px;
+  pointer-events: none;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -44,104 +56,153 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ---- Custom Scrollbar ---- */
-::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.2); }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
 
-/* ---- Premium UI Utilities ---- */
+/* ---- Premium UI Panel ---- */
 .glass-panel {
-  background: var(--glass-bg);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--panel-bg);
   border: 1px solid var(--border);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
 }
 
+/* Metallic gradient for headers */
 .gradient-text {
-  background: linear-gradient(135deg, #818cf8 0%, #e879f9 100%);
+  background: linear-gradient(135deg, #ffffff 0%, #e4e4e7 60%, #a1a1aa 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
 }
 
-/* ---- Card Hover Effect ---- */
+/* ---- Clean Cards ---- */
 .premium-card {
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.premium-card::before {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-  opacity: 0.5;
-  transition: opacity 0.3s;
+  background: var(--panel-bg);
+  border: 1px solid var(--border);
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
 }
 
 .premium-card:hover {
-  transform: translateY(-4px) scale(1.01);
-  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.5), 0 0 20px var(--primary-glow);
-  border-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-.premium-card:hover::before {
-  opacity: 1;
+/* ---- Clean Buttons ---- */
+.btn-primary {
+  background: #ffffff;
+  color: #09090b;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
-/* ---- Button Effects ---- */
+.btn-primary:hover:not(:disabled) {
+  background: #f4f4f5;
+}
+
+.btn-primary:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
 .btn-shiny {
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-  transition: all 0.2s ease;
-}
-
-.btn-shiny::after {
-  content: '';
-  position: absolute;
-  top: -50%; left: -50%; width: 200%; height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-  transform: rotate(45deg) translateX(-100%);
-  transition: transform 0.6s ease;
+  background: #4f46e5;
+  color: #ffffff;
+  font-weight: 600;
+  transition: background-color 0.2s, transform 0.1s;
 }
 
 .btn-shiny:hover:not(:disabled) {
-  box-shadow: 0 0 20px var(--primary-glow);
+  background: #4338ca;
 }
 
-.btn-shiny:hover:not(:disabled)::after {
-  transform: rotate(45deg) translateX(100%);
+.btn-shiny:active:not(:disabled) {
+  transform: scale(0.98);
 }
 
-/* ---- Countdown Urgency Animation ---- */
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); border-color: rgba(239, 68, 68, 0.5); }
-  50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.8); border-color: rgba(239, 68, 68, 1); }
+.btn-secondary-glass {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #a1a1aa;
+  transition: all 0.2s;
+}
+.btn-secondary-glass:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.02);
 }
 
-.countdown-urgent {
-  animation: pulse-glow 1.5s ease-in-out infinite;
-  color: #fca5a5;
-}
-
-/* ---- Badges ---- */
+/* ---- Badges & Pills ---- */
 .badge-glass {
   background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(8px);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #e4e4e7;
 }
 
 .badge-low {
-  background: rgba(245, 158, 11, 0.1);
-  color: #fcd34d;
-  border: 1px solid rgba(245, 158, 11, 0.2);
+  background: rgba(217, 119, 6, 0.1);
+  color: #fbbf24;
+  border: 1px solid rgba(217, 119, 6, 0.2);
 }
 
 .badge-out {
-  background: rgba(239, 68, 68, 0.1);
+  background: rgba(220, 38, 38, 0.1);
   color: #fca5a5;
-  border: 1px solid rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(220, 38, 38, 0.2);
+}
+
+.badge-success {
+  background: rgba(5, 150, 105, 0.1);
+  color: #34d399;
+  border: 1px solid rgba(5, 150, 105, 0.2);
+}
+
+/* ---- Countdown Urgency ---- */
+@keyframes border-pulse {
+  0%, 100% { border-color: rgba(220, 38, 38, 0.3); }
+  50% { border-color: rgba(220, 38, 38, 0.8); }
+}
+
+.countdown-urgent {
+  animation: border-pulse 1.5s ease-in-out infinite;
+  color: #ef4444 !important;
+  background: rgba(220, 38, 38, 0.02) !important;
+}
+
+/* ---- Matte corporate credit card ---- */
+.credit-card-widget {
+  background: #18181b; /* Zinc 900 */
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  position: relative;
+}
+
+.credit-card-chip {
+  width: 42px;
+  height: 32px;
+  background: linear-gradient(135deg, #d4d4d8 0%, #a1a1aa 100%); /* Matte Silver chip */
+  border-radius: 6px;
+  position: relative;
+}
+
+.credit-card-chip::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: 6px; right: 6px; bottom: 4px;
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 4px;
+}
+
+/* Simulated cursor */
+@keyframes blink {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+.blink-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1.1em;
+  background-color: #a1a1aa;
+  margin-left: 2px;
+  animation: blink 1s infinite;
+  vertical-align: middle;
 }

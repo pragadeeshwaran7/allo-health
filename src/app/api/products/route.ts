@@ -3,7 +3,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const products = await prisma.product.findMany({
       include: {
@@ -28,8 +28,9 @@ export async function GET(request: NextRequest) {
     }));
 
     return NextResponse.json({ products: enriched });
-  } catch (err: any) {
-    console.error("[GET /api/products]", err);
-    return NextResponse.json({ error: err.message || "Internal server error", stack: err.stack }, { status: 500 });
+  } catch (err) {
+    const error = err as Error;
+    console.error("[GET /api/products]", error);
+    return NextResponse.json({ error: error.message || "Internal server error", stack: error.stack }, { status: 500 });
   }
 }

@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import ProductCard from "./ProductCard";
+import { RefreshCw } from "lucide-react";
 
 interface StockItem {
   id: string;
@@ -36,7 +37,7 @@ export default function ProductGrid() {
       if (!res.ok) throw new Error("Failed to fetch products");
       const data = await res.json();
       setProducts(data.products);
-    } catch (err) {
+    } catch {
       setError("Failed to load products. Please refresh the page.");
     } finally {
       setLoading(false);
@@ -44,27 +45,35 @@ export default function ProductGrid() {
   }, []);
 
   useEffect(() => {
-    fetchProducts();
+    // Avoid calling setState synchronously within the effect body to satisfy eslint rule.
+    const timer = setTimeout(() => {
+      fetchProducts();
+    }, 0);
+
     // Refresh every 30 seconds to show updated stock
     const interval = setInterval(fetchProducts, 30000);
-    return () => clearInterval(interval);
+
+    return () => {
+      clearTimeout(timer);
+      clearInterval(interval);
+    };
   }, [fetchProducts]);
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-blue-400 border-t-transparent"></div>
+      <div className="flex items-center justify-center py-24">
+        <RefreshCw className="h-8 w-8 animate-spin text-brand-indigo" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-8 text-center">
-        <p className="text-red-400">{error}</p>
+      <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-8 text-center max-w-md mx-auto">
+        <p className="text-red-400 text-sm">{error}</p>
         <button
           onClick={fetchProducts}
-          className="mt-4 rounded-lg bg-red-500/20 px-4 py-2 text-sm text-red-300 hover:bg-red-500/30 transition-colors"
+          className="mt-4 rounded-xl bg-red-500/10 border border-red-500/20 px-4 py-2 text-xs font-bold uppercase tracking-wider text-red-300 hover:bg-red-500/20 transition-colors"
         >
           Try Again
         </button>
@@ -75,23 +84,21 @@ export default function ProductGrid() {
   if (products.length === 0) {
     return (
       <div className="py-20 text-center text-gray-400">
-        <p>No products available.</p>
+        <p>No products available in the catalog.</p>
       </div>
     );
   }
 
   return (
     <div>
-      <div className="mb-4 flex items-center justify-between">
-        <p className="text-sm text-gray-400">{products.length} products found</p>
+      <div className="mb-6 flex items-center justify-between">
+        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">{products.length} products found</p>
         <button
           onClick={fetchProducts}
-          className="flex items-center gap-1.5 rounded-lg bg-gray-800 px-3 py-1.5 text-xs text-gray-300 hover:bg-gray-700 transition-colors"
+          className="flex items-center gap-1.5 rounded-xl border border-white/5 bg-white/5 px-3 py-1.5 text-xs text-gray-300 hover:bg-white/10 hover:border-white/10 transition-all duration-300 group active:scale-95"
         >
-          <svg className="h-3 w-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          Refresh
+          <RefreshCw className="h-3.5 w-3.5 text-gray-400 group-hover:rotate-180 transition-transform duration-500" />
+          <span>Refresh</span>
         </button>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">

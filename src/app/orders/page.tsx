@@ -3,6 +3,16 @@ import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { redirect } from "next/navigation";
 import { formatCurrency } from "@/lib/utils";
+import Link from "next/link";
+import { 
+  ShoppingBag, 
+  ArrowLeft, 
+  Calendar, 
+  Tag, 
+  CheckCircle2, 
+  Clock, 
+  XCircle 
+} from "lucide-react";
 
 export default async function OrdersPage() {
   const session = await getServerSession(authOptions);
@@ -22,72 +32,123 @@ export default async function OrdersPage() {
 
   return (
     <div className="mx-auto max-w-4xl relative">
-      <div className="absolute top-0 right-0 w-[600px] h-[400px] bg-pink-500/10 rounded-full blur-[120px] pointer-events-none" />
-      
-      <div className="mb-10 relative z-10">
-        <h1 className="text-4xl font-extrabold text-white font-display mb-2">My <span className="gradient-text">Orders</span></h1>
-        <p className="text-gray-400">View your purchased items and reservation history.</p>
+      {/* Back button */}
+      <div className="mb-6">
+        <Link 
+          href="/" 
+          className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-gray-400 hover:text-white transition-colors"
+        >
+          <ArrowLeft className="h-4 w-4" />
+          Back to Catalog
+        </Link>
       </div>
 
-      <div className="space-y-6 relative z-10">
+      <div className="mb-10">
+        <h1 className="text-3xl font-bold text-white mb-2 tracking-tight">
+          My Orders
+        </h1>
+        <p className="text-gray-400 text-xs">Review your reservation holds, confirmations, and transaction logs.</p>
+      </div>
+
+      <div className="space-y-6">
         {reservations.length === 0 ? (
-          <div className="glass-panel rounded-2xl p-12 text-center">
-            <div className="text-5xl mb-4 opacity-50">🛍️</div>
-            <h2 className="text-xl font-bold text-white mb-2">No orders yet</h2>
-            <p className="text-gray-400">You haven't made any reservations or purchases.</p>
+          <div className="border border-white/10 bg-[#121214] rounded-xl p-12 text-center flex flex-col items-center justify-center">
+            <div className="h-12 w-12 rounded-lg bg-white/[0.02] border border-white/10 flex items-center justify-center text-gray-500 mb-4">
+              <ShoppingBag className="h-6 w-6 stroke-[1]" />
+            </div>
+            <h2 className="text-lg font-bold text-white mb-2 font-display">No reservations found</h2>
+            <p className="text-gray-400 text-xs max-w-xs leading-relaxed mb-6">
+              You haven&apos;t reserved or purchased any items yet.
+            </p>
+            <Link
+              href="/"
+              className="btn-primary rounded-lg px-4 py-2 text-xs font-bold uppercase tracking-wider text-black bg-white"
+            >
+              Go to Catalog
+            </Link>
           </div>
         ) : (
-          reservations.map((res) => (
-            <div key={res.id} className="glass-panel rounded-2xl p-6 flex flex-col sm:flex-row gap-6">
-              {res.product.imageUrl ? (
-                <img
-                  src={res.product.imageUrl}
-                  alt={res.product.name}
-                  className="h-24 w-24 rounded-xl object-cover shadow-lg"
-                />
-              ) : (
-                <div className="h-24 w-24 rounded-xl bg-white/5 flex items-center justify-center text-gray-500 text-xs">
-                  No Image
-                </div>
-              )}
-              
-              <div className="flex-1">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-2">
-                  <h3 className="text-xl font-bold text-white font-display">{res.product.name}</h3>
-                  <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${
-                    res.status === "CONFIRMED" ? "bg-green-500/20 text-green-400 border border-green-500/30" :
-                    res.status === "PENDING" ? "bg-yellow-500/20 text-yellow-400 border border-yellow-500/30" :
-                    "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-                  }`}>
-                    {res.status}
-                  </span>
-                </div>
-                
-                <p className="text-sm text-gray-400 mb-4 line-clamp-1">
-                  Reserved from <span className="text-gray-300 font-medium">{res.warehouse.name}</span>
-                </p>
+          <div className="border border-white/10 bg-[#121214] rounded-xl overflow-hidden divide-y divide-white/[0.06]">
+            {reservations.map((res) => {
+              const isConfirmed = res.status === "CONFIRMED";
+              const isPending = res.status === "PENDING";
+              const isReleased = res.status === "RELEASED";
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-sm border-t border-white/5 pt-4">
-                  <div>
-                    <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">Date</p>
-                    <p className="text-white">{res.createdAt.toLocaleDateString()}</p>
+              return (
+                <div 
+                  key={res.id} 
+                  className="p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 hover:bg-white/[0.01] transition-colors"
+                >
+                  <div className="flex items-center gap-4 min-w-0 flex-1">
+                    {res.product.imageUrl ? (
+                      <div className="h-12 w-12 rounded-lg overflow-hidden bg-black/40 flex-shrink-0 border border-white/10">
+                        <img
+                          src={res.product.imageUrl}
+                          alt={res.product.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    ) : (
+                      <div className="h-12 w-12 rounded-lg bg-white/[0.02] border border-white/10 flex items-center justify-center text-gray-600 flex-shrink-0">
+                        <ShoppingBag className="h-5 w-5 stroke-[1]" />
+                      </div>
+                    )}
+                    
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-sm text-white truncate">
+                        {res.product.name}
+                      </h3>
+                      <p className="text-[11px] text-gray-400 mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                        <span className="text-gray-500">Center:</span>
+                        <span className="text-gray-300 font-semibold">{res.warehouse.name}</span>
+                        <span className="text-gray-600">•</span>
+                        <span className="text-gray-400">{res.warehouse.location}</span>
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">Qty</p>
-                    <p className="text-white">{res.quantity}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">Total</p>
-                    <p className="text-white font-bold">{formatCurrency(res.product.price * res.quantity)}</p>
-                  </div>
-                  <div>
-                    <p className="text-gray-500 text-xs font-semibold uppercase tracking-wider mb-1">Order ID</p>
-                    <p className="text-gray-400 font-mono text-xs truncate" title={res.id}>{res.id.split('-')[0]}...</p>
+
+                  <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-xs md:text-right w-full md:w-auto">
+                    <div className="min-w-[80px]">
+                      <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Date</p>
+                      <p className="text-gray-300 font-medium">{res.createdAt.toLocaleDateString()}</p>
+                    </div>
+                    <div className="min-w-[50px]">
+                      <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Qty</p>
+                      <p className="text-gray-300 font-bold">{res.quantity}</p>
+                    </div>
+                    <div className="min-w-[100px]">
+                      <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Total</p>
+                      <p className="text-white font-bold">
+                        {formatCurrency(res.product.price * res.quantity)}
+                      </p>
+                    </div>
+                    <div className="min-w-[100px] font-mono">
+                      <p className="text-[9px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Hold ID</p>
+                      <p className="text-gray-500 text-[10px] truncate max-w-[80px]" title={res.id}>
+                        {res.id}
+                      </p>
+                    </div>
+                    <div className="min-w-[100px] flex md:justify-end">
+                      <span 
+                        className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider ${
+                          isConfirmed 
+                            ? "badge-success" 
+                            : isPending 
+                            ? "badge-low" 
+                            : "badge-out"
+                        }`}
+                      >
+                        {isConfirmed && <CheckCircle2 className="h-2.5 w-2.5" />}
+                        {isPending && <Clock className="h-2.5 w-2.5 animate-pulse" />}
+                        {isReleased && <XCircle className="h-2.5 w-2.5" />}
+                        {res.status}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          ))
+              );
+            })}
+          </div>
         )}
       </div>
     </div>
